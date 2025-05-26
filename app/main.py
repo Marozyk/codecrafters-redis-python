@@ -1,7 +1,7 @@
 import socket  # noqa: F401
 import threading
 
-def handler(connection):
+def handler(connection, address):
     while True:
         data = connection.recv(1024)
         if data:
@@ -14,7 +14,7 @@ def main():
 
     while True:
         connection, address = server_socket.accept()
-        threading.Thread(target=handler, args=(connection)).start()
+        threading.Thread(target=handler, args=(connection,address)).start()
     
 
 
