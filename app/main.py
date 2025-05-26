@@ -1,11 +1,16 @@
 import socket  # noqa: F401
 import threading
-
+     
 def handler(connection, address):
     while True:
+
         data = connection.recv(1024)
-        if data:
+        data = data.split(b'\r\n')
+
+        if data[2] == b"PING" :
             connection.sendall(b"+PONG\r\n")
+        elif data[2] == b"ECHO":
+            connection.sendall(b"+" +data[4]+b"\r\n")
 
 def main():
 
