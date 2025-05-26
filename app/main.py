@@ -1,24 +1,20 @@
 import socket  # noqa: F401
+import threading
 
-
-def init_server(address, port):
-    server_socket = socket.create_server((address, port), reuse_port=True)
-    connection, address = server_socket.accept()
-    return connection, address
+def handler(connection):
+    while True:
+        data = connection.recv(1024)
+        if data:
+            connection.sendall(b"+PONG\r\n")
 
 def main():
 
-    connection, _ =init_server("localhost", 6379)
-    while True:
-        data = connection.recv(1024)
-        stringdata = data.decode('utf-8').strip()
-        if not data:
-            break
-        if "PING" in stringdata:
-            connection.sendall(b"+PONG\r\n")
-        else:
-            break
+    server_socket = socket.create_server(("localhost", 6379), reuse_port=True)
     
+
+    while True:
+        connection, address = server_socket.accept()
+        threading.Thread(target=handler, args=(connection)).start()
     
 
 
