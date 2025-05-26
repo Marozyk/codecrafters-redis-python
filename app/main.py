@@ -6,7 +6,8 @@ def handler(connection, address):
 
         data = connection.recv(1024)
         data = data.split(b'\r\n')
-
+        if len(data) < 3:
+            return 
         if data[2] == b"PING" :
             connection.sendall(b"+PONG\r\n")
         elif data[2] == b"ECHO":
