@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
      
 def handler(connection, address):
+    values = {}
     while True:
 
         data = connection.recv(1024)
@@ -12,6 +13,11 @@ def handler(connection, address):
             connection.sendall(b"+PONG\r\n")
         elif data[2] == b"ECHO":
             connection.sendall(b"+" +data[4]+b"\r\n")
+        elif data[2] == b"SET":
+            values[data[4]] = data[6]
+            connection.sendall(b"+OK\r\n")
+        elif data[2] == b"GET":
+            connection.sendall(b"+" +values[data[4]]+b"\r\n")
 
 def main():
 
