@@ -22,7 +22,7 @@ def handler(connection, address):
             connection.sendall(b"+OK\r\n")
         elif data[2] == b"GET":
             if data[4] in timers:
-                if time.time() >= timers[key]:
+                if time.time() >= timers[data[4]]:
                     connection.sendall(b"$-1\r\n")
                     timers.pop(data[4])
             else:
