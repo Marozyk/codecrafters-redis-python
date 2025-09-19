@@ -1,8 +1,10 @@
 import socket  # noqa: F401
 import threading
+import time
      
 def handler(connection, address):
     values = {}
+    timers = {}
     while True:
 
         data = connection.recv(1024)
@@ -15,9 +17,16 @@ def handler(connection, address):
             connection.sendall(b"+" +data[4]+b"\r\n")
         elif data[2] == b"SET":
             values[data[4]] = data[6]
+            if data[7] == b"px":
+                timers[data[4]] = time.time + (data[8]/1000)
             connection.sendall(b"+OK\r\n")
         elif data[2] == b"GET":
-            connection.sendall(b"+" +values[data[4]]+b"\r\n")
+            if data[4] in timers:
+                if time.time() >= timers[key]:
+                    connection.sendall(b"$-1\r\n")
+                    timers.pop(data[4])
+            else:
+                connection.sendall(b"+" +values[data[4]]+b"\r\n")
 
 def main():
 
